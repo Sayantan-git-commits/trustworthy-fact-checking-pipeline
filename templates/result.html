@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Fact Check Result</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .true { color: green; font-weight: bold; }
+        .false { color: red; font-weight: bold; }
+        .mixed { color: orange; font-weight: bold; }
+        .unverified { color: gray; font-weight: bold; }
+        .verified { color: blue; font-weight: bold; }
+        .source { 
+            margin: 10px 0; 
+            padding: 10px; 
+            border-left: 4px solid #007bff; 
+            background: #f8f9fa; 
+            border-radius: 4px;
+        }
+        .correction { 
+            border-left-color: #dc3545; 
+            background: #fff3f3; 
+        }
+        .confirmation { 
+            border-left-color: #28a745; 
+            background: #f0fff4; 
+        }
+        .corrected-statement { 
+            padding: 15px; 
+            background: #e8f5e8; 
+            border-left: 4px solid #28a745;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        .claim-box {
+            background: white;
+            padding: 15px;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .verdict-box {
+            background: white;
+            padding: 15px;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>Fact Check Result</h1>
+    
+    <div class="claim-box">
+        <strong>Original Claim:</strong> "{{ claim }}"
+    </div>
+    
+    <div class="verdict-box">
+        <p><strong>Verdict:</strong> 
+            <span class="{{ verdict.lower() }}">
+                {{ verdict }}
+            </span>
+        </p>
+        
+        <p><strong>Details:</strong> {{ detailed_verdict }}</p>
+        
+        {% if corrected_statement and corrected_statement != claim %}
+        <div class="corrected-statement">
+            <strong>✅ Corrected Information:</strong> {{ corrected_statement }}
+        </div>
+        {% elif corrected_statement and corrected_statement == claim %}
+        <div class="corrected-statement">
+            <strong>✅ Verified Information:</strong> {{ corrected_statement }}
+        </div>
+        {% endif %}
+    </div>
+    
+    <h2>Evidence and Sources:</h2>
+    {% if evidence %}
+        <div>
+        {% for item in evidence %}
+            <div class="source {% if 'correction' in item.snippet.lower() or 'actually' in item.snippet.lower() %}correction
+                            {% elif 'verified' in item.snippet.lower() or 'confirm' in item.snippet.lower() %}confirmation{% endif %}">
+                <strong>{{ item.source }}:</strong> 
+                {{ item.snippet }}<br>
+                <a href="{{ item.url }}" target="_blank">View source</a>
+            </div>
+        {% endfor %}
+        </div>
+    {% else %}
+        <p>No evidence found for this claim.</p>
+    {% endif %}
+    
+    <br>
+    <a href="/">Check another claim</a>
+</body>
+</html>
